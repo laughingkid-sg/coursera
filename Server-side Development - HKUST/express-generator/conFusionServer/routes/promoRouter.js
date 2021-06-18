@@ -1,4 +1,5 @@
 const express = require('express');
+const authenticate = require('../authenticate');
 
 const promoRouter = express.Router();
 
@@ -14,16 +15,16 @@ promoRouter.route('/')
         res.end('Will send all the promotions to you!');
     })
 
-    .post((req, res, next) => {
+    .post(authenticate.verifyUser, (req, res, next) => {
         res.end('Will add the promotion: ' + req.body.name + ' with details: ' + req.body.description);
     })
 
-    .put((req, res, next) => {
+    .put(authenticate.verifyUser, (req, res, next) => {
         res.statusCode = 403;
         res.end('PUT operation not supported on /dishes');
     })
 
-    .delete((req, res, next) => {
+    .delete(authenticate.verifyUser, (req, res, next) => {
         res.end('Deleting all promotions');
     });
 
@@ -37,13 +38,13 @@ promoRouter.route('/:promoId')
         res.end('Will send details of the promotion: ' + req.params.promoId + ' to you!');
     })
 
-    .put((req, res, next) => {
+    .put(authenticate.verifyUser, (req, res, next) => {
         res.write('Updating the promotion: ' + req.params.promoId + '\n');
         res.end('Will update the promotion: ' + req.body.name +
             ' with details: ' + req.body.description);
     })
 
-    .delete((req, res, next) => {
+    .delete(authenticate.verifyUser, (req, res, next) => {
         res.end('Deleting promotion: ' + req.params.promoId);
     });
 
