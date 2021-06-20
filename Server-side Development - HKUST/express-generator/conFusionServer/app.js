@@ -10,8 +10,6 @@ const passport = require('passport');
 const authenticate = require('./authenticate');
 require('dotenv').config()
 
-const Dishes = require('./models/dishes');
-
 const connect = mongoose.connect(process.env.DATABASE, {
   useMongoClient: true
 });
@@ -50,9 +48,6 @@ app.use(session({
 
 app.use(passport.initialize());
 //app.use(passport.session());
-
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
 
 /*
 function auth(req, res, next) {
