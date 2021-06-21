@@ -98,6 +98,31 @@ dishRouter.route('/:dishId/comments')
     .catch((err) => next(err));
 })
 .post(authenticate.verifyUser, (req, res, next) => {
+    
+    Dishes.findById(req.params.dishId)
+    .then((dish) => {
+        if (dish != null) {
+            req.body.author = req.user._id;
+            dish.comments.push(req.body);
+            Dishes.findByIdAndUpdate(dish._id, { $set: dish }, { new: true })
+            .then((dish) => {
+                Dishes.findById(dish._id)
+                .populate('comments.author')
+                .then((dish) => {
+                    res.statusCode = 200;
+                    res.setHeader('Content-Type', 'application/json');
+                    res.json(dish);
+                })            
+            }, (err) => next(err));
+        }
+        else {
+            err = new Error('Dish ' + req.params.dishId + ' not found');
+            err.status = 404;
+            return next(err);
+        }
+    }, (err) => next(err))
+    .catch((err) => next(err));
+    /*
     Dishes.findById(req.params.dishId)
     .then((dish) => {
         if (dish != null) {
@@ -121,7 +146,7 @@ dishRouter.route('/:dishId/comments')
         }
     }, (err) => next(err))
     .catch((err) => next(err));
-})
+*/})
 .put(authenticate.verifyUser, (req, res, next) => {
     res.statusCode = 403;
     res.end('PUT operation not supported on /dishes/'
@@ -183,7 +208,7 @@ dishRouter.route('/:dishId/comments/:commentId')
     .then((dish) => {
         if (dish != null && dish.comments.id(req.params.commentId) != null) {
 
-            if (!req.user._id.equal(dish.comments.id(req.params.commentId).author)) {
+            if (!(dish.comments.id(req.params.commentId).author).equals(req.user._id)) {
                 err = new Error('You are not authorized to edit this comment');
                 err.status = 403;
                 return next(err);
@@ -224,7 +249,7 @@ dishRouter.route('/:dishId/comments/:commentId')
     .then((dish) => {
         if (dish != null && dish.comments.id(req.params.commentId) != null) {
 
-            if (!req.user._id.equal(dish.comments.id(req.params.commentId).author)) {
+            if (!(dish.comments.id(req.params.commentId).author).equals(req.user._id)) {
                 err = new Error('You are not authorized to edit this comment');
                 err.status = 403;
                 return next(err);
