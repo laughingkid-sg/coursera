@@ -10,6 +10,14 @@ const passport = require('passport');
 const authenticate = require('./authenticate');
 require('dotenv').config()
 
+
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
+
+const dishRouter = require('./routes/dishRouter');
+const promoRouter = require('./routes/promoRouter');
+const leaderRouter = require('./routes/leaderRouter');
+
 const connect = mongoose.connect(process.env.DATABASE, {
   useMongoClient: true
 });
@@ -19,14 +27,18 @@ connect.then((db) => {
 }, (err) => { console.log(err); });
 
 
-const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
-
-const dishRouter = require('./routes/dishRouter');
-const promoRouter = require('./routes/promoRouter');
-const leaderRouter = require('./routes/leaderRouter');
 
 const app = express();
+
+// Secure traffic only
+app.all('*', (req, res, next) => {
+  if (req.secure) {
+    return next();
+  }
+  else {
+    res.redirect(307, 'https://' + req.hostname + ':' + app.get('secPort') + req.url);
+  }
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
