@@ -24,7 +24,7 @@ dishRouter.route('/')
 .post(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     Dishes.create(req.body)
     .then((dish) => {
-        console.log('Dish Created ', dish);
+        // console.log('Dish Created ', dish);
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
         res.json(dish);
