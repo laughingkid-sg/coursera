@@ -48,3 +48,8 @@ body{
     border-bottom: 1px solid #ddd;
     padding: 10px;
 }
+
+#accordion a {
+    color: inherit; /* blue colors for links too */
+    text-decoration: inherit; /* no underline */
+  }
